@@ -13,8 +13,8 @@ export interface RootState {
   results: ResultsState;
 }
 
-export const store: Store<RootState>;                 // created with createStore({...})
-export function useStore(): Store<RootState>;         // typed wrapper used by components
+export const store: Store<RootState>; // created with createStore({...})
+export function useStore(): Store<RootState>; // typed wrapper used by components
 ```
 
 All components MUST import `useStore` from `@/store`, not from `vuex` directly (Principle II: avoids `as` casts).
@@ -29,8 +29,8 @@ State owned once at bootstrap. No user action mutates it post-bootstrap.
 
 ```ts
 interface RosterState {
-  horses: readonly Horse[];    // length 20 after bootstrap
-  ready: boolean;              // true after bootstrap completes
+  horses: readonly Horse[]; // length 20 after bootstrap
+  ready: boolean; // true after bootstrap completes
 }
 ```
 
@@ -100,7 +100,7 @@ State for live race execution.
 interface RaceState {
   phase: 'idle' | 'ready' | 'running' | 'between-rounds' | 'finished';
   activeRoundIndex: number | null;
-  horsePositions: Record<HorseId, number>;   // meters, resets per round
+  horsePositions: Record<HorseId, number>; // meters, resets per round
   horseFinishTimes: Record<HorseId, number>; // ms since round start, accumulates
 }
 ```
@@ -143,7 +143,7 @@ Accumulates completed round results.
 
 ```ts
 interface ResultsState {
-  roundResults: readonly RoundResult[];   // in program order, length grows 0 → 6
+  roundResults: readonly RoundResult[]; // in program order, length grows 0 → 6
 }
 ```
 

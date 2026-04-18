@@ -1,8 +1,8 @@
 # Feature Specification: Horse Racing Game
 
-**Feature Branch**: `001-horse-racing-game`  
-**Created**: 2026-04-20  
-**Status**: Draft  
+**Feature Branch**: `001-horse-racing-game`
+**Created**: 2026-04-20
+**Status**: Draft
 **Input**: User description: "Interactive horse racing game that generates a list of horses, builds a 6-round race schedule, animates horses running each round, and reports results round by round."
 
 ## User Scenarios & Testing *(mandatory)*

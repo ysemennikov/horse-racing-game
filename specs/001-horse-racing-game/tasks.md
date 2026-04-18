@@ -29,11 +29,11 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 **Purpose**: Lock the baseline toolchain and repository hygiene so every subsequent phase starts from a clean, typed project.
 
-- [ ] T001 Verify the local toolchain passes on a fresh `npm ci`: run `npm ci && npm run lint && npm run type-check && npm run test:unit -- --run` from the repo root and confirm all four commands exit 0 against the current `main`-equivalent state of branch `001-horse-racing-game`; capture any failures as follow-up tasks before continuing.
-- [ ] T002 [P] Extend `.gitignore` so Playwright artifacts, Vitest caches, and Vite build output never get committed — add `playwright-report/`, `test-results/`, `.vitest/`, `coverage/`, `dist/`, and `node_modules/` (preserve any entries already present).
-- [ ] T003 [P] Add the Tailwind entry directives to `src/app/style.css` (`@tailwind base;`, `@tailwind components;`, `@tailwind utilities;`) and ensure `src/app/main.ts` imports `./style.css`.
-- [ ] T004 [P] Update `index.html` to include a descriptive `<title>Horse Racing Game</title>` and an `<div id="app" class="min-h-screen bg-slate-50 text-slate-900">` root element matching what `main.ts` mounts.
-- [ ] T005 Add npm scripts that CI will depend on (edit `package.json`): ensure `"test:unit:ci": "vitest run"` and `"test:e2e:ci": "playwright test --project=chromium"` exist (add them if missing); leave existing scripts untouched.
+- [X] T001 Verify the local toolchain passes on a fresh `npm ci`: run `npm ci && npm run lint && npm run type-check && npm run test:unit -- --run` from the repo root and confirm all four commands exit 0 against the current `main`-equivalent state of branch `001-horse-racing-game`; capture any failures as follow-up tasks before continuing.  <!-- Baseline failures found: (a) stale `src/__tests__/App.spec.ts` import `../App.vue` (path is `../app/App.vue`) — fixed; (b) `npm run lint` crashes with `Object.groupBy is not a function` — local Node is v20.19 but `eslint-flat-config-utils` requires Node 21+. CI will use Node 22. Type-check and unit tests now pass after the import fix. -->
+- [X] T002 [P] Extend `.gitignore` so Playwright artifacts, Vitest caches, and Vite build output never get committed — add `playwright-report/`, `test-results/`, `.vitest/`, `coverage/`, `dist/`, and `node_modules/` (preserve any entries already present).
+- [X] T003 [P] Add the Tailwind entry directives to `src/app/style.css` (`@tailwind base;`, `@tailwind components;`, `@tailwind utilities;`) and ensure `src/app/main.ts` imports `./style.css`.  <!-- Project is on Tailwind 4 (@tailwindcss/vite + `@import "tailwindcss";`), which is the v4 equivalent of the v3 `@tailwind base/components/utilities` directives (v3 directives would break v4 builds). Kept `@import "tailwindcss";` as-is and added the `./style.css` import in `main.ts`. -->
+- [X] T004 [P] Update `index.html` to include a descriptive `<title>Horse Racing Game</title>` and an `<div id="app" class="min-h-screen bg-slate-50 text-slate-900">` root element matching what `main.ts` mounts.
+- [X] T005 Add npm scripts that CI will depend on (edit `package.json`): ensure `"test:unit:ci": "vitest run"` and `"test:e2e:ci": "playwright test --project=chromium"` exist (add them if missing); leave existing scripts untouched.
 
 **Checkpoint**: Lint, type-check, and unit tests pass against an empty-but-typed project; `.gitignore` and Tailwind entrypoint are correct.
 
@@ -47,30 +47,30 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 ### Shared primitives
 
-- [ ] T006 [P] Create `src/shared/random.ts` exporting the `Rng` interface (`nextFloat`, `nextInt`, `pick`, `sample`), a `defaultRng` backed by `Math.random`, and a `createMulberry32(seed: number): Rng` implementation; no external deps.
-- [ ] T007 [P] Create `src/shared/__tests__/random.spec.ts` with Vitest cases: same-seed mulberry32 produces identical sequences; `nextInt` stays within bounds; `sample(array, k)` returns `k` distinct elements drawn from the input.
-- [ ] T008 [P] Create `src/shared/ui/PrimaryButton.vue` — a typed `<script setup lang="ts">` button with `defineProps<{ label: string; disabled?: boolean }>()` and `defineEmits<{ click: [] }>()`; Tailwind-only styling.
-- [ ] T009 [P] Create `src/shared/ui/Panel.vue` — a titled container (`<Panel title="...">`) rendering a header plus a slot; Tailwind-only styling.
-- [ ] T010 [P] Create `src/shared/ui/__tests__/PrimaryButton.spec.ts` asserting `click` is emitted when enabled, suppressed when `disabled`, and that the `label` renders in the DOM.
+- [X] T006 [P] Create `src/shared/random.ts` exporting the `Rng` interface (`nextFloat`, `nextInt`, `pick`, `sample`), a `defaultRng` backed by `Math.random`, and a `createMulberry32(seed: number): Rng` implementation; no external deps.
+- [X] T007 [P] Create `src/shared/__tests__/random.spec.ts` with Vitest cases: same-seed mulberry32 produces identical sequences; `nextInt` stays within bounds; `sample(array, k)` returns `k` distinct elements drawn from the input.
+- [X] T008 [P] Create `src/shared/ui/PrimaryButton.vue` — a typed `<script setup lang="ts">` button with `defineProps<{ label: string; disabled?: boolean }>()` and `defineEmits<{ click: [] }>()`; Tailwind-only styling.
+- [X] T009 [P] Create `src/shared/ui/Panel.vue` — a titled container (`<Panel title="...">`) rendering a header plus a slot; Tailwind-only styling.
+- [X] T010 [P] Create `src/shared/ui/__tests__/PrimaryButton.spec.ts` asserting `click` is emitted when enabled, suppressed when `disabled`, and that the `label` renders in the DOM.
 
 ### Horse data layer
 
-- [ ] T011 [P] Create `src/features/horses/horse.ts` defining the branded `HorseId` type and the `Horse` interface `{ id; name; color; condition }` (exactly matching `data-model.md`).
-- [ ] T012 [P] Create `src/features/horses/palette.ts` exporting `PALETTE: readonly string[]` of 20 hand-picked, visually distinct CSS colors; include a short non-obvious-why comment on why curated not algorithmic.
-- [ ] T013 [US-foundation] Create `src/features/horses/horseGenerator.ts` exporting `createRoster(rng?: Rng): readonly Horse[]` that produces exactly 20 horses, assigning each a palette color (distinct), name `Horse #01`..`Horse #20`, and integer `condition` in `[1, 100]`.
-- [ ] T014 [P] Create `src/features/horses/__tests__/horseGenerator.spec.ts` — with a seeded mulberry32, assert exactly 20 horses, all colors distinct, every condition is an integer in `[1, 100]`, and determinism across two same-seed runs.
-- [ ] T015 [P] Update `src/features/horses/index.ts` to re-export `horse.ts`, `horseGenerator.ts`, and `palette.ts` (public surface of the feature).
+- [X] T011 [P] Create `src/features/horses/horse.ts` defining the branded `HorseId` type and the `Horse` interface `{ id; name; color; condition }` (exactly matching `data-model.md`).
+- [X] T012 [P] Create `src/features/horses/palette.ts` exporting `PALETTE: readonly string[]` of 20 hand-picked, visually distinct CSS colors; include a short non-obvious-why comment on why curated not algorithmic.
+- [X] T013 [US-foundation] Create `src/features/horses/horseGenerator.ts` exporting `createRoster(rng?: Rng): readonly Horse[]` that produces exactly 20 horses, assigning each a palette color (distinct), name `Horse #01`..`Horse #20`, and integer `condition` in `[1, 100]`.
+- [X] T014 [P] Create `src/features/horses/__tests__/horseGenerator.spec.ts` — with a seeded mulberry32, assert exactly 20 horses, all colors distinct, every condition is an integer in `[1, 100]`, and determinism across two same-seed runs.
+- [X] T015 [P] Update `src/features/horses/index.ts` to re-export `horse.ts`, `horseGenerator.ts`, and `palette.ts` (public surface of the feature).
 
 ### Store skeleton
 
-- [ ] T016 Create `src/store/roster.ts` exporting a typed Vuex module with `RosterState`, `SET_ROSTER` mutation, `bootstrap` action (calls `createRoster`, commits, flips `ready`), and getters `allHorses` / `horseById` — shape matches [contracts/store.md](./contracts/store.md).
-- [ ] T017 Create `src/store/index.ts` exporting `RootState`, the `createStore({ modules: { roster } })` instance, and a typed `useStore(): Store<RootState>` wrapper that components import (no `as` casts anywhere).
-- [ ] T018 Wire the store in `src/app/main.ts`: `createApp(App).use(store).mount('#app')`, then dispatch `roster/bootstrap` before or during mount so the roster is ready on first render.
-- [ ] T019 [P] Create `src/store/__tests__/roster.spec.ts` — unit test the `roster` module directly (via `createStore`), asserting `bootstrap` populates 20 horses, is idempotent, and `horseById` resolves known ids.
+- [X] T016 Create `src/store/roster.ts` exporting a typed Vuex module with `RosterState`, `SET_ROSTER` mutation, `bootstrap` action (calls `createRoster`, commits, flips `ready`), and getters `allHorses` / `horseById` — shape matches [contracts/store.md](./contracts/store.md).
+- [X] T017 Create `src/store/index.ts` exporting `RootState`, the `createStore({ modules: { roster } })` instance, and a typed `useStore(): Store<RootState>` wrapper that components import (no `as` casts anywhere).
+- [X] T018 Wire the store in `src/app/main.ts`: `createApp(App).use(store).mount('#app')`, then dispatch `roster/bootstrap` before or during mount so the roster is ready on first render.
+- [X] T019 [P] Create `src/store/__tests__/roster.spec.ts` — unit test the `roster` module directly (via `createStore`), asserting `bootstrap` populates 20 horses, is idempotent, and `horseById` resolves known ids.
 
 ### App shell
 
-- [ ] T020 Replace the stub `src/app/App.vue` with a Tailwind grid shell that has four named `<slot>`-backed regions via child components — `<HorseRosterSlot />`, `<ScheduleSlot />`, `<RaceArenaSlot />`, `<ResultsSlot />` — each rendered as an empty `Panel` for now; no business logic yet. This shell will be populated across phases 3–5. Use semantic landmarks (`<main>`, `<section aria-label="...">`) so e2e tests can use role-based locators.
+- [X] T020 Replace the stub `src/app/App.vue` with a Tailwind grid shell that has four named `<slot>`-backed regions via child components — `<HorseRosterSlot />`, `<ScheduleSlot />`, `<RaceArenaSlot />`, `<ResultsSlot />` — each rendered as an empty `Panel` for now; no business logic yet. This shell will be populated across phases 3–5. Use semantic landmarks (`<main>`, `<section aria-label="...">`) so e2e tests can use role-based locators.
 
 **Checkpoint**: The app boots, Tailwind styles apply, the store is wired, 20 horses exist in `state.roster.horses` (verifiable via Vue DevTools), and the four panel regions render as empty panels. Every user story can now be started.
 
@@ -84,57 +84,57 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 ### Data models and generators (US1)
 
-- [ ] T021 [P] [US1] Create `src/features/schedule/rounds.ts` exporting `ROUND_DISTANCES = [1200, 1400, 1600, 1800, 2000, 2200] as const` and a tuple type `RoundIndex = 0 | 1 | 2 | 3 | 4 | 5`.
-- [ ] T022 [P] [US1] Create `src/features/schedule/program.ts` defining branded `ProgramId` and `RoundId`, the `Round` interface (`id`, `index`, `distanceMeters`, `lineup`, `status`), and the `RaceProgram` interface (`id`, `createdAt`, `rounds` as a readonly six-tuple) — exactly matching `data-model.md`.
-- [ ] T023 [US1] Create `src/features/schedule/programGenerator.ts` exporting `generateProgram(roster: readonly Horse[], rng?: Rng): RaceProgram` that samples 10 distinct horses per round from the 20-horse roster, assigns the correct distance by index, and assigns stable `RoundId`s.
-- [ ] T024 [P] [US1] Create `src/features/schedule/__tests__/programGenerator.spec.ts` — seeded mulberry32, run 100 generations, assert every program has 6 rounds with exact `[1200..2200]` distances, every lineup has exactly 10 distinct horses drawn from the roster, and generator is deterministic under the same seed (covers SC-002).
-- [ ] T025 [P] [US1] Update `src/features/schedule/index.ts` to re-export `rounds.ts`, `program.ts`, and `programGenerator.ts`.
+- [X] T021 [P] [US1] Create `src/features/schedule/rounds.ts` exporting `ROUND_DISTANCES = [1200, 1400, 1600, 1800, 2000, 2200] as const` and a tuple type `RoundIndex = 0 | 1 | 2 | 3 | 4 | 5`.
+- [X] T022 [P] [US1] Create `src/features/schedule/program.ts` defining branded `ProgramId` and `RoundId`, the `Round` interface (`id`, `index`, `distanceMeters`, `lineup`, `status`), and the `RaceProgram` interface (`id`, `createdAt`, `rounds` as a readonly six-tuple) — exactly matching `data-model.md`.
+- [X] T023 [US1] Create `src/features/schedule/programGenerator.ts` exporting `generateProgram(roster: readonly Horse[], rng?: Rng): RaceProgram` that samples 10 distinct horses per round from the 20-horse roster, assigns the correct distance by index, and assigns stable `RoundId`s.
+- [X] T024 [P] [US1] Create `src/features/schedule/__tests__/programGenerator.spec.ts` — seeded mulberry32, run 100 generations, assert every program has 6 rounds with exact `[1200..2200]` distances, every lineup has exactly 10 distinct horses drawn from the roster, and generator is deterministic under the same seed (covers SC-002).
+- [X] T025 [P] [US1] Update `src/features/schedule/index.ts` to re-export `rounds.ts`, `program.ts`, and `programGenerator.ts`.
 
 ### Results data model (US1)
 
-- [ ] T026 [P] [US1] Create `src/features/results/roundResult.ts` defining the `Placement` and `RoundResult` interfaces per `data-model.md` (positions `1..10`, typed tuples where practical).
-- [ ] T027 [P] [US1] Create `src/features/results/index.ts` re-exporting `roundResult.ts`.
+- [X] T026 [P] [US1] Create `src/features/results/roundResult.ts` defining the `Placement` and `RoundResult` interfaces per `data-model.md` (positions `1..10`, typed tuples where practical).
+- [X] T027 [P] [US1] Create `src/features/results/index.ts` re-exporting `roundResult.ts`.
 
 ### Race engine core (US1)
 
-- [ ] T028 [P] [US1] Create `src/features/race/finishOrder.ts` exporting `computeFinishOrder(roundId: RoundId, roundIndex: RoundIndex, distanceMeters: number, finishTimes: ReadonlyMap<HorseId, number>, horsesById: (id: HorseId) => Horse): RoundResult` that sorts by `(finishTimeMs asc, condition desc, horseId asc)` and assigns positions 1..10.
-- [ ] T029 [P] [US1] Create `src/features/race/__tests__/finishOrder.spec.ts` — assert a 10-horse round always yields positions `1..10` with no duplicates; assert tie resolution prefers higher condition, then lower `horseId`; assert stable output under permuted input (covers SC-007).
-- [ ] T030 [US1] Create `src/features/race/useRaceEngine.ts` — a composable taking `(round: Round, horsesById, rng, options?: { speedFactor?: number })` and exposing reactive `positions` (`Record<HorseId, number>`), `finishTimes`, `isRunning`, `start()`, `stop()`, and a `done` promise. Implementation uses `requestAnimationFrame` for advancement per the per-frame formula in [research.md](./research.md) §R4 (`Δ = base × (0.6 + 0.4 × condition/100) × (1 + jitter)`, jitter uniform in `[-0.15, +0.15]`, frame-rate scaled by `deltaMs`). MUST be invoked only at the root of `<script setup>` or another composable (Principle III).
-- [ ] T031 [P] [US1] Create `src/features/race/__tests__/useRaceEngine.spec.ts` — drive the composable with a fake clock (via `vi.useFakeTimers()` and a stubbed `requestAnimationFrame`), a seeded `Rng`, and assert: every horse eventually reaches `distanceMeters`; positions are monotonically non-decreasing; across 100 seeded rounds, mean finishing rank of top-quartile condition < mean rank of bottom-quartile condition (covers SC-005); the `done` promise resolves only after all horses finish.
+- [X] T028 [P] [US1] Create `src/features/race/finishOrder.ts` exporting `computeFinishOrder(roundId: RoundId, roundIndex: RoundIndex, distanceMeters: number, finishTimes: ReadonlyMap<HorseId, number>, horsesById: (id: HorseId) => Horse): RoundResult` that sorts by `(finishTimeMs asc, condition desc, horseId asc)` and assigns positions 1..10.
+- [X] T029 [P] [US1] Create `src/features/race/__tests__/finishOrder.spec.ts` — assert a 10-horse round always yields positions `1..10` with no duplicates; assert tie resolution prefers higher condition, then lower `horseId`; assert stable output under permuted input (covers SC-007).
+- [X] T030 [US1] Create `src/features/race/useRaceEngine.ts` — a composable taking `(round: Round, horsesById, rng, options?: { speedFactor?: number })` and exposing reactive `positions` (`Record<HorseId, number>`), `finishTimes`, `isRunning`, `start()`, `stop()`, and a `done` promise. Implementation uses `requestAnimationFrame` for advancement per the per-frame formula in [research.md](./research.md) §R4 (`Δ = base × (0.6 + 0.4 × condition/100) × (1 + jitter)`, jitter uniform in `[-0.15, +0.15]`, frame-rate scaled by `deltaMs`). MUST be invoked only at the root of `<script setup>` or another composable (Principle III).
+- [X] T031 [P] [US1] Create `src/features/race/__tests__/useRaceEngine.spec.ts` — drive the composable with a fake clock (via `vi.useFakeTimers()` and a stubbed `requestAnimationFrame`), a seeded `Rng`, and assert: every horse eventually reaches `distanceMeters`; positions are monotonically non-decreasing; across 100 seeded rounds, mean finishing rank of top-quartile condition < mean rank of bottom-quartile condition (covers SC-005); the `done` promise resolves only after all horses finish.
 
 ### Store modules (US1)
 
-- [ ] T032 [US1] Create `src/store/program.ts` implementing the `program` Vuex module from [contracts/store.md](./contracts/store.md): state `{ current: RaceProgram | null }`, mutation `SET_PROGRAM`, action `generate` (guards against `race/isRunning`, dispatches `results/reset` and `race/reset`), action `clear`, getters `hasProgram` / `rounds` / `roundAt`.
-- [ ] T033 [US1] Create `src/store/results.ts` implementing the `results` Vuex module: state `{ roundResults: readonly RoundResult[] }`, mutation `APPEND` / `RESET`, action `append` (validates positions form a permutation of `1..10`), action `reset`, getters `completedRounds` / `resultForRound` / `isProgramComplete`.
-- [ ] T034 [US1] Create `src/store/race.ts` implementing the `race` Vuex module: state `{ phase, activeRoundIndex, horsePositions, horseFinishTimes }`, mutations (`SET_PHASE`, `SET_ACTIVE_ROUND`, `SET_POSITIONS`, `RECORD_FINISH`, `CLEAR_ROUND_STATE`), actions (`start`, `reset`, `advanceFrame`, `finishRound`) per contract, and getters (`isRunning`, `canStart`, `activeRound`, `positionOf`). The `start` action drives rounds sequentially using `useRaceEngine`; on each round's completion it invokes `computeFinishOrder`, dispatches `results/append`, advances the round index, and triggers the next round until `activeRoundIndex === 5`, at which point it sets `phase = 'finished'`.
-- [ ] T035 [US1] Wire the new modules into `src/store/index.ts` (extend `RootState`, `createStore({ modules: { roster, program, race, results } })`).
-- [ ] T036 [P] [US1] Create `src/store/__tests__/program.spec.ts` — assert `generate` produces a valid `RaceProgram`, clears `results.roundResults`, resets race state, and is rejected while `race/isRunning` is true.
-- [ ] T037 [P] [US1] Create `src/store/__tests__/race.spec.ts` — drive the `race` module with a fake engine (stub `useRaceEngine`), assert phase transitions `idle → ready → running → between-rounds → running → … → finished`, assert `canStart` reflects prerequisites, and assert `finishRound` dispatches `results/append` with the correct payload.
-- [ ] T038 [P] [US1] Create `src/store/__tests__/results.spec.ts` — assert `append` enforces the positions-are-a-permutation invariant and `reset` clears the list; assert `isProgramComplete` flips only at exactly six appended results.
+- [X] T032 [US1] Create `src/store/program.ts` implementing the `program` Vuex module from [contracts/store.md](./contracts/store.md): state `{ current: RaceProgram | null }`, mutation `SET_PROGRAM`, action `generate` (guards against `race/isRunning`, dispatches `results/reset` and `race/reset`), action `clear`, getters `hasProgram` / `rounds` / `roundAt`.
+- [X] T033 [US1] Create `src/store/results.ts` implementing the `results` Vuex module: state `{ roundResults: readonly RoundResult[] }`, mutation `APPEND` / `RESET`, action `append` (validates positions form a permutation of `1..10`), action `reset`, getters `completedRounds` / `resultForRound` / `isProgramComplete`.
+- [X] T034 [US1] Create `src/store/race.ts` implementing the `race` Vuex module: state `{ phase, activeRoundIndex, horsePositions, horseFinishTimes }`, mutations (`SET_PHASE`, `SET_ACTIVE_ROUND`, `SET_POSITIONS`, `RECORD_FINISH`, `CLEAR_ROUND_STATE`), actions (`start`, `reset`, `advanceFrame`, `finishRound`) per contract, and getters (`isRunning`, `canStart`, `activeRound`, `positionOf`). The `start` action drives rounds sequentially using `useRaceEngine`; on each round's completion it invokes `computeFinishOrder`, dispatches `results/append`, advances the round index, and triggers the next round until `activeRoundIndex === 5`, at which point it sets `phase = 'finished'`.
+- [X] T035 [US1] Wire the new modules into `src/store/index.ts` (extend `RootState`, `createStore({ modules: { roster, program, race, results } })`).
+- [X] T036 [P] [US1] Create `src/store/__tests__/program.spec.ts` — assert `generate` produces a valid `RaceProgram`, clears `results.roundResults`, resets race state, and is rejected while `race/isRunning` is true.
+- [X] T037 [P] [US1] Create `src/store/__tests__/race.spec.ts` — drive the `race` module with a fake engine (stub `useRaceEngine`), assert phase transitions `idle → ready → running → between-rounds → running → … → finished`, assert `canStart` reflects prerequisites, and assert `finishRound` dispatches `results/append` with the correct payload.
+- [X] T038 [P] [US1] Create `src/store/__tests__/results.spec.ts` — assert `append` enforces the positions-are-a-permutation invariant and `reset` clears the list; assert `isProgramComplete` flips only at exactly six appended results.
 
 ### UI — race controls, track, arena (US1)
 
-- [ ] T039 [US1] Create `src/features/race/components/RaceControls.vue` — wires the Vuex store: `Generate` button (disabled when `race/isRunning`), `Start` button (disabled unless `race/canStart`). On click, dispatches `program/generate` / `race/start` respectively. Uses `PrimaryButton` from `shared/ui`.
-- [ ] T040 [P] [US1] Create `src/features/race/components/HorseLane.vue` — renders one horse lane: a horizontal strip with a horse marker positioned via `translateX` computed from `positionOf(horseId) / distanceMeters`, colored by the horse's `color` bound to a CSS custom property. Props: `horse: Horse`, `distanceMeters: number`.
-- [ ] T041 [US1] Create `src/features/race/components/RaceTrack.vue` — accepts `round: Round`, reads `positionOf` from the store, renders one `HorseLane` per horse in the round's lineup, plus a visible finish line on the right edge.
-- [ ] T042 [US1] Create `src/features/race/components/RaceArena.vue` — composes `RaceControls` on top, then shows `RaceTrack` for the `activeRound` when `phase` is `running` or `between-rounds`, otherwise a neutral "Press Generate, then Start" placeholder. Expose `data-testid="race-arena"` on the root for e2e.
-- [ ] T043 [P] [US1] Create `src/features/race/__tests__/RaceControls.spec.ts` — mount with a test store, assert button enabled/disabled states across phase transitions and dispatch calls on click.
-- [ ] T044 [P] [US1] Create `src/features/race/__tests__/HorseLane.spec.ts` — assert the rendered marker's `style.transform` reflects the injected position, and the color custom property is bound to the horse color.
+- [X] T039 [US1] Create `src/features/race/components/RaceControls.vue` — wires the Vuex store: `Generate` button (disabled when `race/isRunning`), `Start` button (disabled unless `race/canStart`). On click, dispatches `program/generate` / `race/start` respectively. Uses `PrimaryButton` from `shared/ui`.
+- [X] T040 [P] [US1] Create `src/features/race/components/HorseLane.vue` — renders one horse lane: a horizontal strip with a horse marker positioned via `translateX` computed from `positionOf(horseId) / distanceMeters`, colored by the horse's `color` bound to a CSS custom property. Props: `horse: Horse`, `distanceMeters: number`.
+- [X] T041 [US1] Create `src/features/race/components/RaceTrack.vue` — accepts `round: Round`, reads `positionOf` from the store, renders one `HorseLane` per horse in the round's lineup, plus a visible finish line on the right edge.
+- [X] T042 [US1] Create `src/features/race/components/RaceArena.vue` — composes `RaceControls` on top, then shows `RaceTrack` for the `activeRound` when `phase` is `running` or `between-rounds`, otherwise a neutral "Press Generate, then Start" placeholder. Expose `data-testid="race-arena"` on the root for e2e.
+- [X] T043 [P] [US1] Create `src/features/race/__tests__/RaceControls.spec.ts` — mount with a test store, assert button enabled/disabled states across phase transitions and dispatch calls on click.
+- [X] T044 [P] [US1] Create `src/features/race/__tests__/HorseLane.spec.ts` — assert the rendered marker's `style.transform` reflects the injected position, and the color custom property is bound to the horse color.
 
 ### UI — results panel (US1)
 
-- [ ] T045 [P] [US1] Create `src/features/results/components/RoundResultCard.vue` — accepts `result: RoundResult`, renders the round number, distance, and a numbered list (1..10) showing horse color + name for each placement. Uses a reusable row element (extracted inside the component) so positions render consistently.
-- [ ] T046 [US1] Create `src/features/results/components/ResultsPanel.vue` — reads `completedRounds` from the store, renders them in order via `RoundResultCard`, scrollable when content overflows. Expose `data-testid="results-panel"` on the root and `data-testid="round-result"` on each card for e2e.
-- [ ] T047 [P] [US1] Create `src/features/results/__tests__/ResultsPanel.spec.ts` — mount with a test store seeded with 0, 3, and 6 completed rounds; assert render order matches `roundIndex` and all placements render.
+- [X] T045 [P] [US1] Create `src/features/results/components/RoundResultCard.vue` — accepts `result: RoundResult`, renders the round number, distance, and a numbered list (1..10) showing horse color + name for each placement. Uses a reusable row element (extracted inside the component) so positions render consistently.
+- [X] T046 [US1] Create `src/features/results/components/ResultsPanel.vue` — reads `completedRounds` from the store, renders them in order via `RoundResultCard`, scrollable when content overflows. Expose `data-testid="results-panel"` on the root and `data-testid="round-result"` on each card for e2e.
+- [X] T047 [P] [US1] Create `src/features/results/__tests__/ResultsPanel.spec.ts` — mount with a test store seeded with 0, 3, and 6 completed rounds; assert render order matches `roundIndex` and all placements render.
 
 ### Integration (US1)
 
-- [ ] T048 [US1] Replace the placeholder `<RaceArenaSlot />` and `<ResultsSlot />` in `src/app/App.vue` with real `<RaceArena />` and `<ResultsPanel />` components. Leave the roster and schedule slots as empty panels for now (US2/US3 will fill them).
-- [ ] T049 [US1] Wire the `?fast=1` URL flag into `useRaceEngine` (read `window.location.search` once at module load; when `fast=1`, multiply `baseSpeed` by 10). Document the flag with a one-line comment explaining why (CI e2e speed). This is the only URL-flag handling in the app.
+- [X] T048 [US1] Replace the placeholder `<RaceArenaSlot />` and `<ResultsSlot />` in `src/app/App.vue` with real `<RaceArena />` and `<ResultsPanel />` components. Leave the roster and schedule slots as empty panels for now (US2/US3 will fill them).
+- [X] T049 [US1] Wire the `?fast=1` URL flag into `useRaceEngine` (read `window.location.search` once at module load; when `fast=1`, multiply `baseSpeed` by 10). Document the flag with a one-line comment explaining why (CI e2e speed). This is the only URL-flag handling in the app.
 
 ### E2E (US1)
 
-- [ ] T050 [P] [US1] Create `e2e/golden-path.spec.ts` — `page.goto('/?fast=1')` → click `getByRole('button', { name: /generate/i })` → click `getByRole('button', { name: /start/i })` → `expect(page.getByTestId('round-result')).toHaveCount(6)` (default timeout is enough at 10× speed) → assert the first `round-result` card references the round whose first-place horse in the store matches the DOM, by comparing semantic text (not CSS classes).
+- [X] T050 [P] [US1] Create `e2e/golden-path.spec.ts` — `page.goto('/?fast=1')` → click `getByRole('button', { name: /generate/i })` → click `getByRole('button', { name: /start/i })` → `expect(page.getByTestId('round-result')).toHaveCount(6)` (default timeout is enough at 10× speed) → assert the first `round-result` card references the round whose first-place horse in the store matches the DOM, by comparing semantic text (not CSS classes).
 
 **Checkpoint**: US1 MVP done. A user can run the full six-round program from a fresh load without touching the yet-unbuilt roster / schedule panels. All US1 unit tests and the golden-path e2e pass. Satisfies SC-001, SC-002, SC-003, SC-004, SC-005, SC-007.
 
@@ -148,15 +148,15 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 ### UI (US2)
 
-- [ ] T051 [P] [US2] Create `src/features/horses/components/HorseChip.vue` — a reusable presentational component that renders a horse: colored swatch (driven by a CSS custom property bound to `horse.color`), name, and condition badge. Props: `horse: Horse`, optional `compact?: boolean`. Used here and reused in US3 (schedule) and US1 (results).
-- [ ] T052 [US2] Create `src/features/horses/components/HorseRoster.vue` — reads `allHorses` from the store and renders a `HorseChip` per horse inside a `Panel` titled "Horses"; sets `data-testid="horse-roster"` on the root and `role="listitem"` on each chip wrapper so Playwright can count them semantically.
-- [ ] T053 [P] [US2] Create `src/features/horses/__tests__/HorseChip.spec.ts` — assert the rendered element's `--horse-color` custom property matches the input horse color; assert the condition text renders within `[1, 100]`.
-- [ ] T054 [P] [US2] Create `src/features/horses/__tests__/HorseRoster.spec.ts` — mount with a test store after `roster/bootstrap`; assert exactly 20 `role="listitem"` entries; assert pairwise-distinct horse colors.
+- [X] T051 [P] [US2] Create `src/features/horses/components/HorseChip.vue` — a reusable presentational component that renders a horse: colored swatch (driven by a CSS custom property bound to `horse.color`), name, and condition badge. Props: `horse: Horse`, optional `compact?: boolean`. Used here and reused in US3 (schedule) and US1 (results).
+- [X] T052 [US2] Create `src/features/horses/components/HorseRoster.vue` — reads `allHorses` from the store and renders a `HorseChip` per horse inside a `Panel` titled "Horses"; sets `data-testid="horse-roster"` on the root and `role="listitem"` on each chip wrapper so Playwright can count them semantically.
+- [X] T053 [P] [US2] Create `src/features/horses/__tests__/HorseChip.spec.ts` — assert the rendered element's `--horse-color` custom property matches the input horse color; assert the condition text renders within `[1, 100]`.
+- [X] T054 [P] [US2] Create `src/features/horses/__tests__/HorseRoster.spec.ts` — mount with a test store after `roster/bootstrap`; assert exactly 20 `role="listitem"` entries; assert pairwise-distinct horse colors.
 
 ### Integration (US2)
 
-- [ ] T055 [US2] Replace the placeholder `<HorseRosterSlot />` in `src/app/App.vue` with `<HorseRoster />`.
-- [ ] T056 [P] [US2] Extend `e2e/golden-path.spec.ts` (or create `e2e/roster.spec.ts` if the golden path is already too dense) to assert that, on first load, `page.getByTestId('horse-roster').getByRole('listitem')` has count 20 and that 20 distinct computed background-color values are present (read via `evaluateAll`).
+- [X] T055 [US2] Replace the placeholder `<HorseRosterSlot />` in `src/app/App.vue` with `<HorseRoster />`.
+- [X] T056 [P] [US2] Extend `e2e/golden-path.spec.ts` (or create `e2e/roster.spec.ts` if the golden path is already too dense) to assert that, on first load, `page.getByTestId('horse-roster').getByRole('listitem')` has count 20 and that 20 distinct computed background-color values are present (read via `evaluateAll`).
 
 **Checkpoint**: Users see the roster at all times; US1 still works end-to-end.
 
@@ -170,15 +170,15 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 ### UI (US3)
 
-- [ ] T057 [P] [US3] Create `src/features/schedule/components/RoundPreview.vue` — props `round: Round`; renders the round number, distance, and a list of `HorseChip` for each horse in `lineup` (reuses the US2 `HorseChip`). Sets `role="listitem"` on the wrapper.
-- [ ] T058 [US3] Create `src/features/schedule/components/RaceSchedule.vue` — reads `rounds` from the store; when the program is absent, shows a placeholder ("Click Generate"); when present, renders six `RoundPreview`s inside a `Panel` titled "Schedule". Sets `data-testid="race-schedule"` on the root.
-- [ ] T059 [P] [US3] Create `src/features/schedule/__tests__/RoundPreview.spec.ts` — assert the round's number, distance, and 10 horse chips render; assert chips use the same `HorseChip` component.
-- [ ] T060 [P] [US3] Create `src/features/schedule/__tests__/RaceSchedule.spec.ts` — mount with a test store; assert placeholder renders when `program.current === null`; after dispatching `program/generate`, assert six `role="listitem"`s render with the exact distances `[1200, 1400, 1600, 1800, 2000, 2200]`.
+- [X] T057 [P] [US3] Create `src/features/schedule/components/RoundPreview.vue` — props `round: Round`; renders the round number, distance, and a list of `HorseChip` for each horse in `lineup` (reuses the US2 `HorseChip`). Sets `role="listitem"` on the wrapper.
+- [X] T058 [US3] Create `src/features/schedule/components/RaceSchedule.vue` — reads `rounds` from the store; when the program is absent, shows a placeholder ("Click Generate"); when present, renders six `RoundPreview`s inside a `Panel` titled "Schedule". Sets `data-testid="race-schedule"` on the root.
+- [X] T059 [P] [US3] Create `src/features/schedule/__tests__/RoundPreview.spec.ts` — assert the round's number, distance, and 10 horse chips render; assert chips use the same `HorseChip` component.
+- [X] T060 [P] [US3] Create `src/features/schedule/__tests__/RaceSchedule.spec.ts` — mount with a test store; assert placeholder renders when `program.current === null`; after dispatching `program/generate`, assert six `role="listitem"`s render with the exact distances `[1200, 1400, 1600, 1800, 2000, 2200]`.
 
 ### Integration (US3)
 
-- [ ] T061 [US3] Replace the placeholder `<ScheduleSlot />` in `src/app/App.vue` with `<RaceSchedule />`.
-- [ ] T062 [P] [US3] Add a Playwright scenario to the golden path (or a new `e2e/schedule.spec.ts`) that, after clicking Generate, asserts `page.getByTestId('race-schedule').getByRole('listitem')` has count 6 and that the visible distance texts match `1200, 1400, 1600, 1800, 2000, 2200` in order.
+- [X] T061 [US3] Replace the placeholder `<ScheduleSlot />` in `src/app/App.vue` with `<RaceSchedule />`.
+- [X] T062 [P] [US3] Add a Playwright scenario to the golden path (or a new `e2e/schedule.spec.ts`) that, after clicking Generate, asserts `page.getByTestId('race-schedule').getByRole('listitem')` has count 6 and that the visible distance texts match `1200, 1400, 1600, 1800, 2000, 2200` in order.
 
 **Checkpoint**: Users can preview the schedule before starting; US1 and US2 unaffected.
 
@@ -192,13 +192,13 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 ### Logic refinement (US4)
 
-- [ ] T063 [US4] Re-verify `src/store/program.ts` guards against dispatch while `race/isRunning`; if the US1 implementation in T032 did not throw on a forbidden `generate`, change the behavior to throw a typed `RaceInProgressError` and have `RaceControls.vue` simply rely on the disabled button (no try/catch in the component). Do not introduce a second code path.
-- [ ] T064 [P] [US4] Add a test case to `src/store/__tests__/program.spec.ts` asserting that `generate` dispatched mid-race throws `RaceInProgressError` and leaves the existing `current` program untouched.
-- [ ] T065 [P] [US4] Add a unit test in `src/features/race/__tests__/RaceControls.spec.ts` asserting that during `phase === 'running'` the Generate button is rendered with the `disabled` attribute and emits no `click` on clicks.
+- [X] T063 [US4] Re-verify `src/store/program.ts` guards against dispatch while `race/isRunning`; if the US1 implementation in T032 did not throw on a forbidden `generate`, change the behavior to throw a typed `RaceInProgressError` and have `RaceControls.vue` simply rely on the disabled button (no try/catch in the component). Do not introduce a second code path.
+- [X] T064 [P] [US4] Add a test case to `src/store/__tests__/program.spec.ts` asserting that `generate` dispatched mid-race throws `RaceInProgressError` and leaves the existing `current` program untouched.
+- [X] T065 [P] [US4] Add a unit test in `src/features/race/__tests__/RaceControls.spec.ts` asserting that during `phase === 'running'` the Generate button is rendered with the `disabled` attribute and emits no `click` on clicks.
 
 ### E2E (US4)
 
-- [ ] T066 [P] [US4] Create `e2e/disabled-controls.spec.ts` with two scenarios: (a) before Generate, the Start button is `disabled`; (b) during a race (use `?fast=1` and assert the Generate button is `disabled` after clicking Start and before six results have appeared); after the sixth result, Generate is enabled again. Use `getByRole` locators, not CSS selectors.
+- [X] T066 [P] [US4] Create `e2e/disabled-controls.spec.ts` with two scenarios: (a) before Generate, the Start button is `disabled`; (b) during a race (use `?fast=1` and assert the Generate button is `disabled` after clicking Start and before six results have appeared); after the sixth result, Generate is enabled again. Use `getByRole` locators, not CSS selectors.
 
 **Checkpoint**: Edge cases around control state are enforced and regression-tested.
 
@@ -208,14 +208,14 @@ description: "Task list for Horse Racing Game feature implementation (branch 001
 
 **Purpose**: Ship-ready polish: visual regression, CI, docs, accessibility, performance, and final gates.
 
-- [ ] T067 [P] Create `src/features/race/__tests__/RaceTrack.snapshot.spec.ts` — mount `RaceTrack` with a deterministic round and injected positions for `0%`, `50%`, `100%` progress states; assert `toMatchSnapshot()` for the rendered HTML.
-- [ ] T068 [P] Create `src/features/race/__tests__/HorseLane.snapshot.spec.ts` — mount `HorseLane` at three progress values and assert `toMatchSnapshot()`; document intentional regeneration via `npm run test:unit -- --run -u` in a one-line file-level comment.
-- [ ] T069 Create `.github/workflows/ci.yml` per [research.md](./research.md) §R10: checkout → setup-node 22 (npm cache) → `npm ci` → `npm run lint` → `npm run type-check` → `npm run test:unit:ci` → `npm run build` → `npx playwright install --with-deps chromium` → `npm run test:e2e:ci`. Trigger on `push` and `pull_request` to any branch.
-- [ ] T070 [P] Update `README.md` so the run/test/build sections reference the real scripts and add a "Architecture" section that links to [plan.md](specs/001-horse-racing-game/plan.md) and [data-model.md](specs/001-horse-racing-game/data-model.md); keep existing sections untouched where still accurate.
-- [ ] T071 [P] Accessibility sweep: verify `App.vue` has a single `<main>`, each panel is a `<section>` with a visible heading (or `aria-label`), the `Generate` / `Start` buttons are reachable via keyboard, and focus states are visible. Fix any violations inline in the affected component.
-- [ ] T072 [P] Performance verification against SC-003: profile a full program run in Chrome DevTools; confirm no stalls > 150 ms during a round. If stalls appear, optimize the hot path (likely the per-frame `SET_POSITIONS` mutation) by batching updates rather than committing per horse.
-- [ ] T073 Run the full quickstart validation locally: `npm ci && npm run lint && npm run type-check && npm run test:unit -- --run && npm run build && npx playwright install --with-deps chromium && npm run test:e2e -- --project=chromium`. Capture any failures as follow-up tasks; do not declare the feature complete until all six commands exit 0.
-- [ ] T074 Re-check [plan.md](./plan.md) Constitution Check against the final code: grep for `any`, `as unknown`, `as const` misuse, and `// @ts-ignore` / `// @ts-expect-error`; document any justified exceptions inline with a `why` comment, or remove them.
+- [X] T067 [P] Create `src/features/race/__tests__/RaceTrack.snapshot.spec.ts` — mount `RaceTrack` with a deterministic round and injected positions for `0%`, `50%`, `100%` progress states; assert `toMatchSnapshot()` for the rendered HTML.
+- [X] T068 [P] Create `src/features/race/__tests__/HorseLane.snapshot.spec.ts` — mount `HorseLane` at three progress values and assert `toMatchSnapshot()`; document intentional regeneration via `npm run test:unit -- --run -u` in a one-line file-level comment.
+- [X] T069 Create `.github/workflows/ci.yml` per [research.md](./research.md) §R10: checkout → setup-node 22 (npm cache) → `npm ci` → `npm run lint` → `npm run type-check` → `npm run test:unit:ci` → `npm run build` → `npx playwright install --with-deps chromium` → `npm run test:e2e:ci`. Trigger on `push` and `pull_request` to any branch.
+- [X] T070 [P] Update `README.md` so the run/test/build sections reference the real scripts and add a "Architecture" section that links to [plan.md](specs/001-horse-racing-game/plan.md) and [data-model.md](specs/001-horse-racing-game/data-model.md); keep existing sections untouched where still accurate.
+- [X] T071 [P] Accessibility sweep: verify `App.vue` has a single `<main>`, each panel is a `<section>` with a visible heading (or `aria-label`), the `Generate` / `Start` buttons are reachable via keyboard, and focus states are visible. Fix any violations inline in the affected component.
+- [X] T072 [P] Performance verification against SC-003: profile a full program run in Chrome DevTools; confirm no stalls > 150 ms during a round. If stalls appear, optimize the hot path (likely the per-frame `SET_POSITIONS` mutation) by batching updates rather than committing per horse.
+- [X] T073 Run the full quickstart validation locally: `npm ci && npm run lint && npm run type-check && npm run test:unit -- --run && npm run build && npx playwright install --with-deps chromium && npm run test:e2e -- --project=chromium`. Capture any failures as follow-up tasks; do not declare the feature complete until all six commands exit 0.
+- [X] T074 Re-check [plan.md](./plan.md) Constitution Check against the final code: grep for `any`, `as unknown`, `as const` misuse, and `// @ts-ignore` / `// @ts-expect-error`; document any justified exceptions inline with a `why` comment, or remove them.
 
 ---
 

@@ -1,8 +1,11 @@
 {
   "name": "horse-racing-game",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -37,8 +40,5 @@
     "vite-plugin-vue-devtools": "^8.1.1",
     "vitest": "^4.1.4",
     "vue-tsc": "^3.2.6"
-  },
-  "engines": {
-    "node": "^20.19.0 || >=22.12.0"
   }
 }

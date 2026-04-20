@@ -58,10 +58,10 @@ export function runRound(
         }
       }
 
-      onFrame(positions);
+      onFrame({ ...positions });
 
       if (round.lineup.every(id => finishTimes[id] !== undefined))
-        resolve({ positions, finishTimes });
+        resolve({ positions: { ...positions }, finishTimes });
       else
         requestAnimationFrame(tick);
     };

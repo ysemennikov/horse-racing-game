@@ -1,32 +1,27 @@
-# .
+# Horse Racing Game
 
-This template should help get you started developing with Vue 3 in Vite.
+A single-page Vue 3 app: generate a six-round race program from a twenty-horse roster, watch each round animate, and read ranked results round by round.
 
-## Recommended IDE Setup
+## Architecture
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+State lives in a Vuex 4 store split into four namespaced modules (`roster`, `program`, `race`, `results`). Race execution is driven by `runRound` ([src/features/race/raceLoop.ts](src/features/race/raceLoop.ts)) — a `requestAnimationFrame` loop that advances per-horse positions until every horse in the current round crosses the finish line. Finishing order is deterministic (finish-time → condition → id) so there are never visible ties.
 
-## Recommended Browser Setup
+See the full design docs:
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- [specs/001-horse-racing-game/plan.md](specs/001-horse-racing-game/plan.md)
+- [specs/001-horse-racing-game/data-model.md](specs/001-horse-racing-game/data-model.md)
+- [specs/001-horse-racing-game/contracts/store.md](specs/001-horse-racing-game/contracts/store.md)
+- [specs/001-horse-racing-game/quickstart.md](specs/001-horse-racing-game/quickstart.md)
 
-## Type Support for `.vue` Imports in TS
+## Prerequisites
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+- Node.js `^20.19` or `>=22.12`
+- npm (project is npm-locked; do not mix with yarn/pnpm)
 
 ## Project Setup
 
 ```sh
-npm install
+npm ci
 ```
 
 ### Compile and Hot-Reload for Development
@@ -35,33 +30,48 @@ npm install
 npm run dev
 ```
 
+Append `?fast=1` to the URL (`http://localhost:5173/?fast=1`) to run the simulation 10× faster — used by CI e2e tests.
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
 npm run build
 ```
 
+### Lint
+
+```sh
+npm run lint
+npm run lint:fix
+```
+
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
-npm run test:unit
+npm run test:unit             # watch mode
+npm run test:unit:ci          # one-shot, used by CI
+npm run test:unit -- --run -u # regenerate snapshots intentionally
 ```
 
 ### Run End-to-End Tests with [Playwright](https://playwright.dev)
 
 ```sh
-# Install browsers for the first run
+# First time only
 npx playwright install
 
-# When testing on CI, must build the project first
+# Build before e2e on CI-like setups
 npm run build
 
-# Runs the end-to-end tests
+# Run all browsers
 npm run test:e2e
-# Runs the tests only on Chromium
-npm run test:e2e -- --project=chromium
-# Runs the tests of a specific file
-npm run test:e2e -- tests/example.spec.ts
-# Runs the tests in debug mode
-npm run test:e2e -- --debug
+
+# Chromium only (CI-equivalent)
+npm run test:e2e:ci
+
+# Single file
+npm run test:e2e -- e2e/golden-path.spec.ts
 ```
+
+## IDE
+
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (disable Vetur).
